@@ -37,6 +37,10 @@ bool SceneNode::is_joint() const
   return false;
 }
 
+string SceneNode::getName() const {
+  return m_name;
+}
+
 JointNode::JointNode(const std::string& name)
   : SceneNode(name)
 {

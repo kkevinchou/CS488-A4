@@ -6,14 +6,16 @@
 #include "primitive.hpp"
 #include "material.hpp"
 
+using namespace std;
+
 class SceneNode {
 public:
-  SceneNode(const std::string& name);
+  SceneNode(const string& name);
   virtual ~SceneNode();
 
   const Matrix4x4& get_transform() const { return m_trans; }
   const Matrix4x4& get_inverse() const { return m_invtrans; }
-  
+
   void set_transform(const Matrix4x4& m)
   {
     m_trans = m;
@@ -44,12 +46,13 @@ public:
 
   // Returns true if and only if this node is a JointNode
   virtual bool is_joint() const;
-  
+
+  string getName() const;
 protected:
-  
+
   // Useful for picking
   int m_id;
-  std::string m_name;
+  string m_name;
 
   // Transformations
   Matrix4x4 m_trans;
@@ -62,7 +65,7 @@ protected:
 
 class JointNode : public SceneNode {
 public:
-  JointNode(const std::string& name);
+  JointNode(const string& name);
   virtual ~JointNode();
 
   virtual bool is_joint() const;
@@ -74,7 +77,7 @@ public:
     double min, init, max;
   };
 
-  
+
 protected:
 
   JointRange m_joint_x, m_joint_y;
@@ -82,7 +85,7 @@ protected:
 
 class GeometryNode : public SceneNode {
 public:
-  GeometryNode(const std::string& name,
+  GeometryNode(const string& name,
                Primitive* primitive);
   virtual ~GeometryNode();
 

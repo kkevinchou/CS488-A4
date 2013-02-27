@@ -17,8 +17,10 @@ void a4_render(// What to render
                )
 {
     Background bg(width, height);
-
     Image img(width, height, 3);
+
+    cerr << "MEOW" << endl;
+    cerr << root->getName() << endl;
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < height; x++) {

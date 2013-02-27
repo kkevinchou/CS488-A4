@@ -1,9 +1,9 @@
 #include "ray.hpp"
 
-Ray::Ray(const Point3D& pos, const Vector3D& dir) : pos(pos), dir(dir) {
+Ray::Ray(const Point3D& pos, const Vector3D& dir, const Background& bg) : pos(pos), dir(dir), bg(bg) {
 
 }
 
 Colour Ray::cast() const {
-    return Colour(0.5);
+    return bg.getPixelColour(pos[0], pos[1]);
 }

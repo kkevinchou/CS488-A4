@@ -1,5 +1,6 @@
 #include "a4.hpp"
 #include "image.hpp"
+#include "background.hpp"
 
 void a4_render(// What to render
                SceneNode* root,
@@ -15,34 +16,18 @@ void a4_render(// What to render
                const std::list<Light*>& lights
                )
 {
-    // Fill in raytracing code here.
-
-    cerr << "Stub: a4_render(" << root << ",\n     "
-        << filename << ", " << width << ", " << height << ",\n     "
-        << eye << ", " << view << ", " << up << ", " << fov << ",\n     "
-        << ambient << ",\n     {";
-
-    for (std::list<Light*>::const_iterator I = lights.begin(); I != lights.end(); ++I) {
-        if (I != lights.begin()) {
-            cerr << ", ";
-        }
-        cerr << **I;
-    }
-
-    cerr << "});" << std::endl;
-
-    // For now, just make a sample image.
+    Background bg(width, height);
 
     Image img(width, height, 3);
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < height; x++) {
-            // Red: increasing from top to bottom
-            img(x, y, 0) = (double)y / height;
-            // Green: increasing from left to right
-            img(x, y, 1) = (double)x / width;
-            // Blue: in lower-left and upper-right corners
-            img(x, y, 2) = ((y < height/2 && x < height/2) || (y >= height/2 && x >= height/2)) ? 1.0 : 0.0;
+            Ray r = Ray(Point3D(x, y, 0), view, bg);
+            Colour c = r.cast();
+
+            img(x, y, 0) = c.R();
+            img(x, y, 1) = c.G();
+            img(x, y, 2) = c.B();
         }
     }
 

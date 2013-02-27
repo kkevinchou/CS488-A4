@@ -1,6 +1,7 @@
 #include "a4.hpp"
 #include "image.hpp"
 #include "background.hpp"
+#include "collider.hpp"
 
 void a4_render(// What to render
                SceneNode* root,
@@ -13,17 +14,19 @@ void a4_render(// What to render
                const Vector3D& up, double fov,
                // Lighting parameters
                const Colour& ambient,
-               const std::list<Light*>& lights
+               const list<Light*>& lights
                )
 {
     Background bg(width, height);
+    Collider collider(root);
+
     Image img(width, height, 3);
 
     cerr << root->getName() << endl;
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < height; x++) {
-            Ray r = Ray(Point3D(x, y, 0), view, bg);
+            Ray r = Ray(Point3D(x, y, 0), view, bg, root, collider);
             Colour c = r.cast();
 
             img(x, y, 0) = c.R();

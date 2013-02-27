@@ -12,20 +12,23 @@ SceneNode::~SceneNode()
 
 void SceneNode::rotate(char axis, double angle)
 {
-  std::cerr << "Stub: Rotate " << m_name << " around " << axis << " by " << angle << std::endl;
-  // Fill me in
+    Matrix4x4 t = rotation(angle, axis);
+    Matrix4x4 matrix = m_trans * t;
+    set_transform(matrix);
 }
 
 void SceneNode::scale(const Vector3D& amount)
 {
-  std::cerr << "Stub: Scale " << m_name << " by " << amount << std::endl;
-  // Fill me in
+    Matrix4x4 t = scaling(amount);
+    Matrix4x4 matrix = m_trans * t;
+    set_transform(matrix);
 }
 
 void SceneNode::translate(const Vector3D& amount)
 {
-  std::cerr << "Stub: Translate " << m_name << " by " << amount << std::endl;
-  // Fill me in
+    Matrix4x4 t = translation(amount);
+    Matrix4x4 matrix = m_trans * t;
+    set_transform(matrix);
 }
 
 bool SceneNode::is_joint() const
@@ -70,4 +73,4 @@ GeometryNode::GeometryNode(const std::string& name, Primitive* primitive)
 GeometryNode::~GeometryNode()
 {
 }
- 
+

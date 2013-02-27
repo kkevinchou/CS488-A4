@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "a2.hpp"
 #include <iostream>
 
 SceneNode::SceneNode(const std::string& name)

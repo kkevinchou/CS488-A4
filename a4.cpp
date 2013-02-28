@@ -3,6 +3,8 @@
 #include "background.hpp"
 #include "collider.hpp"
 
+bool debug = false;
+
 void a4_render(// What to render
                SceneNode* root,
                // Where to output the image
@@ -33,6 +35,9 @@ void a4_render(// What to render
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
+            if (x == 325 && height - y - 1 == 225) {
+                debug = true;
+            }
             Point3D rayPoint(x - offsetX, y - offsetY, focalLength);
             cast_result cr = rayCaster.cast(eye, rayPoint - eye);
 

@@ -5,14 +5,15 @@
 
 using namespace std;
 
-struct collisiondata {
-
+struct collision_result {
+    bool hit;
+    Colour colour;
 };
 
 class Collider {
 public:
     Collider(const SceneNode *root);
-    collisiondata getCollisionData(const Point3D& pos, const Vector3D& dir) const;
+    collision_result getCollisionData(const Point3D& pos, const Vector3D& dir) const;
 private:
     const SceneNode *root;
 };

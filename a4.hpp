@@ -5,7 +5,7 @@
 #include "algebra.hpp"
 #include "scene.hpp"
 #include "light.hpp"
-#include "ray.hpp"
+#include "raycaster.hpp"
 
 using namespace std;
 

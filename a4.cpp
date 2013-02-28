@@ -17,17 +17,20 @@ void a4_render(// What to render
                const list<Light*>& lights
                )
 {
+    cerr << "RUNNING..........................." << endl;
     Background bg(width, height);
-    Collider collider(root);
+    RayCaster rayCaster(eye, bg, root);
 
     Image img(width, height, 3);
 
-    cerr << root->getName() << endl;
+    double focalLength = (double)width / (2 * tan(fov / 2));
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < height; x++) {
-            Ray r = Ray(Point3D(x, y, 0), view, bg, root, collider);
-            Colour c = r.cast();
+            Point3D rayPoint(x, y, focalLength);
+            cast_result cr = rayCaster.cast(eye, rayPoint - eye);
+
+            Colour c = (cr.hit) ? cr.colour : bg.getPixelColour(x, y);
 
             img(x, y, 0) = c.R();
             img(x, y, 1) = c.G();

@@ -102,7 +102,11 @@ public:
   }
 
   double distSq(const Point3D &p) const {
-    return (v_[0] - p[0]) * (v_[0] - p[0]) + (v_[1] - p[1]) * (v_[1] - p[1]);
+    return (v_[0] - p[0]) * (v_[0] - p[0]) + (v_[1] - p[1]) * (v_[1] - p[1]) + (v_[2] - p[2]) * (v_[2] - p[2]);
+  }
+
+  double dist(const Point3D &p) const {
+    return sqrt(distSq(p));
   }
 
 private:

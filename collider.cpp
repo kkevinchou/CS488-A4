@@ -43,17 +43,21 @@ list<collision_result> Collider::getCollisionData(const Point3D& pos, const Vect
 
 list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *p, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const {
     double a = dir.dot(dir);
-    double b = (pos - p->getPosition()).dot(dir) * 2;
-    double c = (pos - p->getPosition()).dot((pos - p->getPosition())) - (p->getRadius() * p->getRadius());
+    double b = (pos - p->get_position()).dot(dir) * 2;
+    double c = (pos - p->get_position()).dot((pos - p->get_position())) - (p->get_radius() * p->get_radius());
 
     double roots[2];
     int quadResult = quadraticRoots(a, b, c, roots);
 
     list<collision_result> hits;
     for (int i = 0; i < quadResult; i++) {
+        if (roots[i] < 0) continue;
         collision_result hit;
         hit.point = pos + (roots[i] * dir);
         hit.colour = m->get_diffuse();
+        hit.normal = (hit.point - p->get_position());
+        hit.normal.normalize();
+        hit.id = p->id;
 
         hits.push_back(hit);
     }

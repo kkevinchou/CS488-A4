@@ -22,7 +22,7 @@ void a4_render(// What to render
     cerr << "RUNNING..........................." << endl;
 
     Background bg(width, height);
-    RayCaster rayCaster(eye, bg, root);
+    RayCaster rayCaster(eye, bg, root, lights);
 
     Image img(width, height, 3);
 
@@ -35,7 +35,7 @@ void a4_render(// What to render
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
-            if (x == 325 && height - y - 1 == 225) {
+            if (x == 250 && height - y - 1 == 250) {
                 debug = true;
             }
             Point3D rayPoint(x - offsetX, y - offsetY, focalLength);

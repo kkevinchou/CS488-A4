@@ -1,4 +1,11 @@
 #include "primitive.hpp"
+#include <iostream>
+
+int Primitive::nextId = 0;
+
+Primitive::Primitive() {
+    id = nextId++;
+}
 
 Primitive::~Primitive()
 {

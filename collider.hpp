@@ -9,6 +9,8 @@ using namespace std;
 struct collision_result {
     Colour colour;
     Point3D point;
+    Vector3D normal;
+    int id;
 };
 
 class Collider {

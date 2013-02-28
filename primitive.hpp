@@ -3,6 +3,8 @@
 
 #include "algebra.hpp"
 
+using namespace std;
+
 class Primitive {
 public:
   enum Type {
@@ -14,9 +16,14 @@ public:
 
   virtual ~Primitive();
 
+  Primitive();
+
   virtual Type get_type() const {
     return Primitive::UNDEFINED;
   }
+
+  static int nextId;
+  int id;
 };
 
 class Sphere : public Primitive {
@@ -37,11 +44,11 @@ public:
   }
   virtual ~NonhierSphere();
 
-  Point3D getPosition() const {
+  Point3D get_position() const {
     return m_pos;
   }
 
-  double getRadius() const {
+  double get_radius() const {
     return m_radius;
   }
 

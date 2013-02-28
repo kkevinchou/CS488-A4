@@ -30,22 +30,22 @@ void a4_render(// What to render
     double offsetY = (double)height / 2;
 
     int hitCount = 0;
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < height; x++) {
-    // for (int y = 0; y < 1; y++) {
-    //     for (int x = 0; x < 1; x++) {
+
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
             Point3D rayPoint(x - offsetX, y - offsetY, focalLength);
             cast_result cr = rayCaster.cast(eye, rayPoint - eye);
 
             Colour c = (cr.hit) ? cr.colour : bg.getPixelColour(x, y);
 
             if (cr.hit) {
-              hitCount++;
+                hitCount++;
             }
 
-            img(x, y, 0) = c.R();
-            img(x, y, 1) = c.G();
-            img(x, y, 2) = c.B();
+            // cerr << x << ", " << y << endl;
+            img(x, height - y - 1, 0) = c.R();
+            img(x, height - y - 1, 1) = c.G();
+            img(x, height - y - 1, 2) = c.B();
         }
     }
 

@@ -2,6 +2,9 @@
 #define CS488_IMAGE_HPP
 
 #include <string>
+#include <iostream>
+
+using namespace std;
 
 /** An image, consisting of a rectangle of floating-point elements.
  * This class makes it easy to read PNG files and the like from
@@ -39,10 +42,10 @@ public:
 
   bool savePng(const std::string& filename); ///< Save this image into
                                              ///  the given PNG file
-  
+
   const double* data() const;
   double* data();
-  
+
 private:
   int m_width, m_height;
   int m_elements;

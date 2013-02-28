@@ -50,8 +50,9 @@ public:
 
   // Returns true if and only if this node is a JointNode
   virtual bool is_joint() const;
+  virtual bool is_geometry() const;
 
-  virtual Primitive *getPrimitive() const {
+  virtual Primitive *get_primitive() const {
     return NULL;
   }
 
@@ -98,17 +99,21 @@ public:
   virtual ~GeometryNode();
 
   const Material* get_material() const;
-  Material* get_material();
 
   void set_material(Material* material)
   {
     m_material = material;
   }
 
-  virtual Primitive* getPrimitive() const {
+  virtual Primitive* get_primitive() const {
     return m_primitive;
   }
 
+  Primitive::Type get_type() const {
+    return m_primitive->get_type();
+  }
+
+  virtual bool is_geometry() const;
 protected:
   Material* m_material;
   Primitive* m_primitive;

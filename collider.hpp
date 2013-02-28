@@ -8,6 +8,7 @@ using namespace std;
 struct collision_result {
     bool hit;
     Colour colour;
+    Point3D point;
 };
 
 class Collider {
@@ -17,7 +18,7 @@ public:
 private:
     const SceneNode *root;
 
-    collision_result nonhierSphereSolver(NonhierSphere *s, const Point3D& pos, const Vector3D& dir) const;
+    collision_result nonhierSphereSolver(NonhierSphere *p, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const;
 };
 
 #endif

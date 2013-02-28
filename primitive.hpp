@@ -14,7 +14,7 @@ public:
 
   virtual ~Primitive();
 
-  virtual Type getType() const {
+  virtual Type get_type() const {
     return Primitive::UNDEFINED;
   }
 };
@@ -45,7 +45,7 @@ public:
     return m_radius;
   }
 
-  virtual Type getType() const {
+  virtual Type get_type() const {
     return Primitive::NONHIERSPHERE;
   }
 
@@ -61,7 +61,7 @@ public:
   {
   }
 
-  virtual Type getType() const {
+  virtual Type get_type() const {
     return Primitive::NONHIERBOX;
   }
 

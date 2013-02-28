@@ -37,6 +37,10 @@ bool SceneNode::is_joint() const
   return false;
 }
 
+bool SceneNode::is_geometry() const {
+  return false;
+}
+
 string SceneNode::getName() const {
   return m_name;
 }
@@ -79,3 +83,10 @@ GeometryNode::~GeometryNode()
 {
 }
 
+bool GeometryNode::is_geometry() const {
+  return true;
+}
+
+const Material *GeometryNode::get_material() const {
+  return m_material;
+}

@@ -21,6 +21,14 @@ public:
 
   virtual void apply_gl() const;
 
+  Colour get_diffuse() const {
+    return m_kd;
+  }
+
+  Colour get_spec() const {
+    return m_ks;
+  }
+
 private:
   Colour m_kd;
   Colour m_ks;

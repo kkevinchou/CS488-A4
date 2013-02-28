@@ -9,9 +9,7 @@ cast_result RayCaster::cast(const Point3D &pos, const Vector3D &dir) const {
 
     cast_result result;
     result.hit = collisionResult.hit;
-    if (result.hit) {
-        result.colour = Colour(0);
-    }
+    result.colour = collisionResult.colour;
 
     return result;
 }

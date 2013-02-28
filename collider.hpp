@@ -16,6 +16,8 @@ public:
     collision_result getCollisionData(const Point3D& pos, const Vector3D& dir) const;
 private:
     const SceneNode *root;
+
+    collision_result nonhierSphereSolver(NonhierSphere *s, const Point3D& pos, const Vector3D& dir) const;
 };
 
 #endif

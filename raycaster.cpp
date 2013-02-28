@@ -5,11 +5,13 @@ RayCaster::RayCaster(const Point3D& eye, const Background& bg, const SceneNode *
 }
 
 cast_result RayCaster::cast(const Point3D &pos, const Vector3D &dir) const {
-    collision_result data = collider.getCollisionData(eye, dir);
+    collision_result collisionResult = collider.getCollisionData(eye, dir);
 
     cast_result result;
-
-    result.hit = data.hit;
+    result.hit = collisionResult.hit;
+    if (result.hit) {
+        result.colour = Colour(0);
+    }
 
     return result;
 }

@@ -5,7 +5,18 @@
 
 class Primitive {
 public:
+  enum Type {
+    NONHIERSPHERE,
+    NONHIERBOX,
+    MESH,
+    UNDEFINED
+  };
+
   virtual ~Primitive();
+
+  virtual Type getType() const {
+    return Primitive::UNDEFINED;
+  }
 };
 
 class Sphere : public Primitive {
@@ -26,6 +37,18 @@ public:
   }
   virtual ~NonhierSphere();
 
+  Point3D getPosition() const {
+    return m_pos;
+  }
+
+  double getRadius() const {
+    return m_radius;
+  }
+
+  virtual Type getType() const {
+    return Primitive::NONHIERSPHERE;
+  }
+
 private:
   Point3D m_pos;
   double m_radius;
@@ -37,7 +60,11 @@ public:
     : m_pos(pos), m_size(size)
   {
   }
-  
+
+  virtual Type getType() const {
+    return Primitive::NONHIERBOX;
+  }
+
   virtual ~NonhierBox();
 
 private:

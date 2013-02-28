@@ -18,6 +18,7 @@ void a4_render(// What to render
                )
 {
     cerr << "RUNNING..........................." << endl;
+
     Background bg(width, height);
     RayCaster rayCaster(eye, bg, root);
 
@@ -25,18 +26,30 @@ void a4_render(// What to render
 
     double focalLength = (double)width / (2 * tan(fov / 2));
 
+    double offsetX = (double)width / 2;
+    double offsetY = (double)height / 2;
+
+    int hitCount = 0;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < height; x++) {
-            Point3D rayPoint(x, y, focalLength);
+    // for (int y = 0; y < 1; y++) {
+    //     for (int x = 0; x < 1; x++) {
+            Point3D rayPoint(x - offsetX, y - offsetY, focalLength);
             cast_result cr = rayCaster.cast(eye, rayPoint - eye);
 
             Colour c = (cr.hit) ? cr.colour : bg.getPixelColour(x, y);
+
+            if (cr.hit) {
+              hitCount++;
+            }
 
             img(x, y, 0) = c.R();
             img(x, y, 1) = c.G();
             img(x, y, 2) = c.B();
         }
     }
+
+    cerr << "HIT COUNT: " << hitCount << endl;
 
     img.savePng(filename);
 }

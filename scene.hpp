@@ -38,6 +38,10 @@ public:
     m_children.remove(child);
   }
 
+  list<SceneNode*> get_children() const {
+    return m_children;
+  }
+
   // Callbacks to be implemented.
   // These will be called from Lua.
   void rotate(char axis, double angle);
@@ -46,6 +50,10 @@ public:
 
   // Returns true if and only if this node is a JointNode
   virtual bool is_joint() const;
+
+  virtual Primitive *getPrimitive() const {
+    return NULL;
+  }
 
   string getName() const;
 protected:
@@ -95,6 +103,10 @@ public:
   void set_material(Material* material)
   {
     m_material = material;
+  }
+
+  virtual Primitive* getPrimitive() const {
+    return m_primitive;
   }
 
 protected:

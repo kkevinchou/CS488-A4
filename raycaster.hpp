@@ -15,11 +15,8 @@ struct ray {
 };
 
 struct cast_result {
+    collision_result collisionResult;
     bool hit;
-    int id;
-    Colour colour;
-    Point3D point;
-    double dist;
 };
 
 class RayCaster {

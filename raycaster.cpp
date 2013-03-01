@@ -25,6 +25,8 @@ cast_result RayCaster::cast(const Point3D &pos, const Vector3D &dir) const {
     for (list<collision_result>::iterator it = hits.begin(); it != hits.end(); it++) {
         double distSq = pos.distSq((*it).point);
 
+        // We've collided with something too close, we were probably
+        // casting from the surface and rehit the same object, so ignore
         if (distSq < 0.01) {
             continue;
         }
@@ -35,15 +37,13 @@ cast_result RayCaster::cast(const Point3D &pos, const Vector3D &dir) const {
         }
     }
 
+    castResult.collisionResult = closestHit;
     if (minDistSq == INFINITY) {
         castResult.hit = false;
         return castResult;
     }
 
-    castResult.colour = closestHit.colour;
-    castResult.point = closestHit.point;
-    castResult.dist = closestHit.point.dist(pos);
-    castResult.id = closestHit.id;
+    castResult.collisionResult = closestHit;
 
     return castResult;
 }
@@ -59,7 +59,7 @@ cast_result RayCaster::cast2(const Point3D &pos, const Vector3D &dir) const {
 
     cast_result secondaryCast;
     for (list<Light *>::const_iterator it = lights.begin(); it != lights.end(); it++) {
-        secondaryCast = cast(primaryCast.point, (*it)->position - primaryCast.point);
+        secondaryCast = cast(primaryCast.collisionResult.point, (*it)->position - primaryCast.collisionResult.point);
         if (!secondaryCast.hit) {
             inLight = true;
             break;
@@ -67,7 +67,7 @@ cast_result RayCaster::cast2(const Point3D &pos, const Vector3D &dir) const {
     }
 
     if (!inLight) {
-        primaryCast.colour = Colour(0);
+        primaryCast.collisionResult.colour = Colour(0);
     }
 
     return primaryCast;

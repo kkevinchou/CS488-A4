@@ -10,7 +10,6 @@ list<collision_result> Collider::getCollisionData(const Point3D& pos, const Vect
 
     list<SceneNode *> objs = root->get_children();
 
-    int counter = 0;
     for (list<SceneNode *>::iterator it = objs.begin(); it != objs.end(); it++) {
         if (!(*it)->is_geometry()) {
             continue;

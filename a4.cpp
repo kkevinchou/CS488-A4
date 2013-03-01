@@ -21,12 +21,23 @@ void a4_render(// What to render
 {
     cerr << "RUNNING..........................." << endl;
 
+    Vector3D m_view      = view;
+    Vector3D m_up        = up;
+    Vector3D m_side      = view.cross(up);
+
+    double m_width = 2 * tan(M_PI * fov / (2 * 180));
+    double m_height = m_width;
+
+    m_side.normalize();
+    m_view.normalize();
+    m_up.normalize();
+
     Background bg(width, height);
     RayCaster rayCaster(eye, bg, root, lights);
 
     Image img(width, height, 3);
 
-    double focalLength = (double)width / (2 * tan(fov / 2));
+    double focalLength = (double)width / (2 * tan(M_PI * fov / (2 * 180)));
 
     double offsetX = (double)width / 2;
     double offsetY = (double)height / 2;
@@ -38,19 +49,31 @@ void a4_render(// What to render
             if (x == 250 && height - y - 1 == 250) {
                 debug = true;
             }
-            Point3D rayPoint(x - offsetX, y - offsetY, focalLength);
-            cast_result cr = rayCaster.cast(eye, rayPoint - eye);
+            Vector3D dir = ( x / ((double)width) * 2 - 1 ) *
+                    tan( fov * M_PI / 360.0 ) *
+                    ( (double)width / (double)height ) *
+                    m_side + ( y / (double)height * 2 - 1 ) *
+                    tan( fov * M_PI / 360.0 ) *
+                    -m_up + m_view;
+            dir.normalize();
 
-            Colour c = (cr.hit) ? cr.colour : bg.getPixelColour(x, y);
+            Point3D rayPoint(x - offsetX, y - offsetY, focalLength);
+            // cast_result cr = rayCaster.cast2(eye, rayPoint - eye);
+            cast_result cr = rayCaster.cast2(eye, dir);
+
+            Colour c = (cr.hit) ? cr.collisionResult.colour : bg.getPixelColour(x, y);
 
             if (cr.hit) {
                 hitCount++;
             }
 
             // cerr << x << ", " << y << endl;
-            img(x, height - y - 1, 0) = c.R();
-            img(x, height - y - 1, 1) = c.G();
-            img(x, height - y - 1, 2) = c.B();
+            // img(x, height - y - 1, 0) = c.R();
+            // img(x, height - y - 1, 1) = c.G();
+            // img(x, height - y - 1, 2) = c.B();
+            img(x, y, 0) = c.R();
+            img(x, y, 1) = c.G();
+            img(x, y, 2) = c.B();
         }
     }
 

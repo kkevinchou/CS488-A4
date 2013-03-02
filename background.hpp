@@ -19,7 +19,7 @@ public:
     }
 
     Colour getPixelColour(double x, double y) const {
-        return Colour(x / width, 0.5, y / height);
+        return Colour(min((double)(y / height + 0.4), 8.0), 0, min((double)(y / height + 0.4), 8.0));
     }
 
 private:

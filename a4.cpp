@@ -33,7 +33,7 @@ void a4_render(// What to render
     m_up.normalize();
 
     Background bg(width, height);
-    RayCaster rayCaster(eye, bg, root, lights);
+    RayCaster rayCaster(eye, bg, root, lights, ambient);
 
     Image img(width, height, 3);
 
@@ -61,7 +61,7 @@ void a4_render(// What to render
             // cast_result cr = rayCaster.cast2(eye, rayPoint - eye);
             cast_result cr = rayCaster.cast2(eye, dir);
 
-            Colour c = (cr.hit) ? cr.collisionResult.colour : bg.getPixelColour(x, y);
+            Colour c = (cr.hit) ? cr.finalColour : bg.getPixelColour(x, y);
 
             if (cr.hit) {
                 hitCount++;

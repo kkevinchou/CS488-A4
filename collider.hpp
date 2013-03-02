@@ -11,6 +11,7 @@ struct collision_result {
     Point3D point;
     Vector3D normal;
     int id;
+    const PhongMaterial *phongMaterial;
 };
 
 class Collider {

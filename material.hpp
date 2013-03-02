@@ -29,6 +29,10 @@ public:
     return m_ks;
   }
 
+  double get_shininess() const {
+    return m_shininess;
+  }
+
 private:
   Colour m_kd;
   Colour m_ks;

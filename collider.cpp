@@ -57,6 +57,7 @@ list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *p, const Pho
         hit.normal = (hit.point - p->get_position());
         hit.normal.normalize();
         hit.id = p->id;
+        hit.phongMaterial = m;
 
         hits.push_back(hit);
     }

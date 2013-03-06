@@ -61,9 +61,8 @@ cast_result RayCaster::cast2(const Point3D &pos, const Vector3D &dir) const {
     return primaryCast;
 }
 
-Colour RayCaster::shade(struct cast_result primaryCast, const Light *light, bool &hit) const {
-    Colour c(0);
-    hit = true;
+Colour RayCaster::shade(struct cast_result primaryCast, const Light *light) const {
+    Colour colourFromLight(0);
 
     cast_result castResult;
     Point3D position = primaryCast.collisionResult.point;
@@ -88,18 +87,13 @@ Colour RayCaster::shade(struct cast_result primaryCast, const Light *light, bool
         double rDotEye = max(r.dot(eyeVec), 0.0);
         Colour materialPropertiesColour = phongMaterial->get_diffuse();
 
-        // if (lightDotNormal > 0.0) {
+        if (lightDotNormal > 0.0) {
             materialPropertiesColour = materialPropertiesColour + (pow(rDotEye, phongMaterial->get_shininess())) / normal.dot(lightVec) * phongMaterial->get_spec();
-            c = light->colour * materialPropertiesColour * energyIn;
-        // } else {
-        //     cerr << "[RayCaster::shade] WARNING: lightVec dot normal <= 0 [" << lightDotNormal << "]" << endl;
-        //     hit = false;
-        // }
-    } else {
-        hit = false;
+            colourFromLight = light->colour * materialPropertiesColour * energyIn;
+        }
     }
 
-    return c;
+    return colourFromLight;
 }
 
 Colour RayCaster::shade(struct cast_result primaryCast) const {
@@ -108,12 +102,7 @@ Colour RayCaster::shade(struct cast_result primaryCast) const {
     cast_result castResult;
 
     for (list<Light *>::const_iterator it = lights.begin(); it != lights.end(); it++) {
-        bool hit = false;
-        Colour lightColour = shade(primaryCast, (*it), hit);
-
-        if (!hit) {
-            continue;
-        }
+        Colour lightColour = shade(primaryCast, (*it));
         finalColour = finalColour + lightColour;
     }
 

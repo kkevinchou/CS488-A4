@@ -26,7 +26,7 @@ public:
     cast_result cast(const Point3D &pos, const Vector3D &dir) const;
     cast_result cast2(const Point3D &pos, const Vector3D &dir) const;
 
-    Colour shade(struct cast_result primaryCast, const Light *light, bool &hit) const;
+    Colour shade(struct cast_result primaryCast, const Light *light) const;
     Colour shade(struct cast_result primaryCast) const;
 private:
     const Point3D &eye;

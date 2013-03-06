@@ -7,6 +7,8 @@
 
 extern bool debug;
 
+bool printProgress = true;
+
 void a4_render(// What to render
                SceneNode* root,
                // Where to output the image
@@ -73,12 +75,21 @@ void a4_render(// What to render
             img(x, y, 1) = c.G();
             img(x, y, 2) = c.B();
 
-            int newPercentage = (double)(x * height + y) * 100 / (width * height);
-            if (newPercentage > percentage && (newPercentage % 10 == 0)) {
-              percentage = newPercentage;
-              cerr << percentage << "\% done" << endl;
+            if (printProgress) {
+                int newPercentage = (double)(x * height + y) * 100 / (width * height);
+                if (newPercentage > percentage) {
+                      percentage = newPercentage;
+                      cerr << ". ";
+                      if (percentage % 10 == 0) {
+                        cerr << percentage << "\% done" << endl;
+                      }
+                }
             }
         }
+    }
+
+    if (printProgress) {
+        cerr << ". 100\% done" << endl;
     }
 
     t = clock() - t;

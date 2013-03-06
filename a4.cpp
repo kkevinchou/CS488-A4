@@ -3,7 +3,7 @@
 #include "background.hpp"
 #include "collider.hpp"
 
-bool debug = false;
+extern bool debug;
 
 void a4_render(// What to render
                SceneNode* root,
@@ -46,9 +46,6 @@ void a4_render(// What to render
 
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
-            if (x == 250 && height - y - 1 == 250) {
-                debug = true;
-            }
             Vector3D dir = ( x / ((double)width) * 2 - 1 ) *
                     tan( fov * M_PI / 360.0 ) *
                     ( (double)width / (double)height ) *
@@ -60,6 +57,8 @@ void a4_render(// What to render
             Point3D rayPoint(x - offsetX, y - offsetY, focalLength);
             // cast_result cr = rayCaster.cast2(eye, rayPoint - eye);
             cast_result cr = rayCaster.cast2(eye, dir);
+
+            // if (debug) cerr << x << ", " << y << endl;
 
             Colour c = (cr.hit) ? cr.finalColour : bg.getPixelColour(x, y);
 

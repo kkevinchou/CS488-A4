@@ -1,7 +1,9 @@
 #include "raycaster.hpp"
 #include <math.h>
+#include <algorithm>
+#include <iostream>
 
-extern bool debug;
+bool debug;
 
 RayCaster::RayCaster(const Point3D& eye, const Background& bg, const SceneNode *root, const list<Light *> &lights, const Colour &ambient)
     : eye(eye), bg(bg), lights(lights), collider(root), ambient(ambient) {
@@ -49,6 +51,7 @@ cast_result RayCaster::cast(const Point3D &pos, const Vector3D &dir) const {
 }
 
 cast_result RayCaster::cast2(const Point3D &pos, const Vector3D &dir) const {
+    debug = false;
     cast_result primaryCast = cast(pos, dir);
 
     if (!primaryCast.hit) {
@@ -74,15 +77,24 @@ Colour RayCaster::shade(struct cast_result primaryCast, const Light *light) cons
         lightVec.normalize();
         Vector3D normal = primaryCast.collisionResult.normal;
 
+        double lightDotNormal = max(lightVec.dot(normal), 0.0);
         const double *falloff = light->falloff;
-        double energyIn = lightVec.dot(normal);
+        double energyIn = lightDotNormal;
         energyIn /= (falloff[0] + falloff[1] * sqrt(distSq) + falloff[2] * distSq);
 
-        Vector3D r = (-1 * lightVec) + (2 * (lightVec.dot(normal)) * normal);
+        Vector3D r = (-1 * lightVec) + (2 * lightDotNormal * normal);
         Vector3D eyeVec = eye - position;
         eyeVec.normalize();
 
-        Colour materialPropertiesColour = phongMaterial->get_diffuse() + (pow(r.dot(eyeVec), phongMaterial->get_shininess())) / normal.dot(lightVec) * phongMaterial->get_spec();
+        double rDotEye = max(r.dot(eyeVec), 0.0);
+        Colour materialPropertiesColour = phongMaterial->get_diffuse();
+
+        if (lightDotNormal > 0.0) {
+            materialPropertiesColour = materialPropertiesColour + (pow(rDotEye, phongMaterial->get_shininess())) / normal.dot(lightVec) * phongMaterial->get_spec();
+        } else {
+            cerr << "[RayCaster::shade] WARNING: lightVec dot normal <= 0" << lightDotNormal << endl;
+            debug = true;
+        }
 
         c = light->colour * materialPropertiesColour * energyIn;
     }

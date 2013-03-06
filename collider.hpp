@@ -2,6 +2,7 @@
 #define COLLIDER_HPP
 
 #include "scene.hpp"
+#include "mesh.hpp"
 #include <list>
 
 using namespace std;
@@ -22,6 +23,7 @@ private:
     const SceneNode *root;
 
     list<collision_result> nonhierSphereSolver(NonhierSphere *p, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const;
+    list<collision_result> meshSolver(Mesh *mesh, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const;
 };
 
 #endif

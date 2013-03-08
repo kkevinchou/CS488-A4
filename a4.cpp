@@ -49,26 +49,53 @@ void a4_render(// What to render
 
     int percentage = 0;
     clock_t t = clock();
+
+    bool superSampling = true;
+    double sampleDimension = 16.0;
+
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
-            Vector3D dir = ( x / ((double)width) * 2 - 1 ) *
+            Vector3D dir;
+            Colour c(0);
+
+            if (!superSampling) {
+                dir = ( x / ((double)width) * 2 - 1 ) *
                     tan( fov * M_PI / 360.0 ) *
                     ( (double)width / (double)height ) *
                     m_side + ( y / (double)height * 2 - 1 ) *
                     tan( fov * M_PI / 360.0 ) *
                     -m_up + m_view;
-            dir.normalize();
+                dir.normalize();
 
-            Point3D rayPoint(x - offsetX, y - offsetY, focalLength);
-            // cast_result cr = rayCaster.cast2(eye, rayPoint - eye);
-            cast_result cr = rayCaster.cast2(eye, dir);
+                cast_result cr = rayCaster.cast2(eye, dir);
 
-            // if (debug) cerr << x << ", " << y << endl;
+                if (cr.hit) {
+                    hitCount++;
+                }
 
-            Colour c = (cr.hit) ? cr.finalColour : bg.getPixelColour(x, y);
+                c = (cr.hit) ? cr.finalColour : bg.getPixelColour(x, y);
+            } else {
+                for (int i = -sampleDimension/2; i < sampleDimension/2; i++) {
+                    for (int j = -sampleDimension/2; j < sampleDimension/2; j++) {
+                        dir = ( (x + i/sampleDimension) / ((double)width) * 2 - 1 ) *
+                            tan( fov * M_PI / 360.0 ) *
+                            ( (double)width / (double)height ) *
+                            m_side + ( (y + j/sampleDimension) / (double)height * 2 - 1 ) *
+                            tan( fov * M_PI / 360.0 ) *
+                            -m_up + m_view;
+                        dir.normalize();
 
-            if (cr.hit) {
-                hitCount++;
+                        cast_result cr = rayCaster.cast2(eye, dir);
+
+                        if (cr.hit) {
+                            hitCount++;
+                        }
+
+                        c = (cr.hit) ? c + cr.finalColour : c + bg.getPixelColour(x, y);
+                    }
+                }
+
+                c = (1.0 / (sampleDimension * sampleDimension)) * c;
             }
 
             img(x, y, 0) = c.R();

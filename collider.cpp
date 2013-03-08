@@ -34,6 +34,13 @@ list<collision_result> Collider::getCollisionData(const Point3D& pos, const Vect
                     newHits = meshSolver(p, m, pos, dir);
                     break;
                 }
+            case Primitive::NONHIERBOX:
+                {
+                    // NonhierBox *p = static_cast<NonhierBox *>(g->get_primitive());
+                    // const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
+                    // newHits = meshSolver(p, m, pos, dir);
+                    // break;
+                }
         }
 
         allHits.insert(allHits.begin(), newHits.begin(), newHits.end());
@@ -75,10 +82,7 @@ list<collision_result> Collider::meshSolver(Mesh *mesh, const PhongMaterial *m, 
 
     for (unsigned int i = 0; i < facePlanes.size(); i++) {
         struct face_plane f = facePlanes[i];
-
         unsigned int numPoints = f.points.size();
-
-        collision_result hit;
 
         int refPointIndex = 1;
         Point3D refPoint = f.points[refPointIndex];
@@ -89,13 +93,9 @@ list<collision_result> Collider::meshSolver(Mesh *mesh, const PhongMaterial *m, 
         if (t <= 0) continue;
         Point3D intersectPoint = pos + t * dir;
 
+        collision_result hit;
         hit.point = intersectPoint;
         hit.normal = refNormal;
-
-        if (debug) {
-            // cerr << hit.normal << endl;
-            debug = false;
-        }
 
         bool passesPoints = true;
         for (unsigned int j = 0; j < numPoints; j++) {
@@ -122,3 +122,50 @@ list<collision_result> Collider::meshSolver(Mesh *mesh, const PhongMaterial *m, 
 
     return hits;
 }
+
+// list<collision_result> Collider::meshSolver(Mesh *mesh, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const {
+//     list<collision_result> hits;
+//     vector<struct face_plane> facePlanes = mesh->facePlanes;
+
+//     for (unsigned int i = 0; i < facePlanes.size(); i++) {
+//         struct face_plane f = facePlanes[i];
+//         unsigned int numPoints = f.points.size();
+
+//         int refPointIndex = 1;
+//         Point3D refPoint = f.points[refPointIndex];
+//         Vector3D refNormal = (f.points[refPointIndex + 1] - refPoint).cross(f.points[refPointIndex - 1] - refPoint);
+//         refNormal.normalize();
+
+//         double t = (refPoint - pos).dot(refNormal) / (dir.dot(refNormal));
+//         if (t <= 0) continue;
+//         Point3D intersectPoint = pos + t * dir;
+
+//         collision_result hit;
+//         hit.point = intersectPoint;
+//         hit.normal = refNormal;
+
+//         bool passesPoints = true;
+//         for (unsigned int j = 0; j < numPoints; j++) {
+//             unsigned int nextIndex = (j + 1) % numPoints;
+
+//             Point3D point = f.points[j];
+//             Vector3D windingVec = f.points[nextIndex] - point;
+
+//             Vector3D refVector = refNormal.cross(windingVec);
+//             refVector.normalize();
+//             if ((intersectPoint - point).dot(refVector) <= 0) {
+//                 passesPoints = false;
+//                 break;
+//             }
+//         }
+
+//         if (passesPoints) {
+//             hit.colour = m->get_diffuse();
+//             hit.id = mesh->id;
+//             hit.phongMaterial = m;
+//             hits.push_back(hit);
+//         }
+//     }
+
+//     return hits;
+// }

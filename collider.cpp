@@ -29,42 +29,42 @@ list<collision_result> Collider::getCollisionData2(const Point3D& pos, const Vec
             case Primitive::NONHIERSPHERE:
                 {
                     NonhierSphere *p = static_cast<NonhierSphere *>(g->get_primitive());
-                    const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
-                    newHits = nonhierSphereSolver(p, m, tpos, tdir);
+                    newHits = nonhierSphereSolver(p, tpos, tdir);
 
                     break;
                 }
             case Primitive::SPHERE:
                 {
                     Sphere *p = static_cast<Sphere *>(g->get_primitive());
-                    const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
-                    newHits = sphereSolver(p, m, tpos, tdir);
+                    newHits = sphereSolver(p, tpos, tdir);
                     break;
                 }
             case Primitive::CUBE:
                 {
                     Cube *c = static_cast<Cube *>(g->get_primitive());
-                    const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
-                    newHits = cubeSolver(c, m, tpos, tdir);
+                    newHits = cubeSolver(c, tpos, tdir);
                     break;
                 }
             case Primitive::NONHIERBOX:
                 {
                     NonhierBox *p = static_cast<NonhierBox *>(g->get_primitive());
-                    const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
-                    newHits = nonhierBoxSolver(p, m, tpos, tdir);
+                    newHits = nonhierBoxSolver(p, tpos, tdir);
                     break;
                 }
             case Primitive::MESH:
                 {
                     Mesh *p = static_cast<Mesh *>(g->get_primitive());
-                    const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
-                    newHits = meshSolver(p, m, tpos, tdir);
+                    newHits = meshSolver(p, tpos, tdir);
                     break;
                 }
             default:
                 // cerr << "unhandled primitive type" << endl;
                 break;
+        }
+
+        const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
+        for (list<collision_result>::iterator it = newHits.begin(); it != newHits.end(); ++it) {
+            it->phongMaterial = m;
         }
 
         allHits.insert(allHits.end(), newHits.begin(), newHits.end());
@@ -85,55 +85,11 @@ list<collision_result> Collider::getCollisionData2(const Point3D& pos, const Vec
     return allHits;
 }
 
-list<collision_result> Collider::getCollisionData(const Point3D& pos, const Vector3D& dir) const {
-    list<collision_result> allHits;
-
-    list<SceneNode *> objs = root->get_children();
-
-    for (list<SceneNode *>::iterator it = objs.begin(); it != objs.end(); it++) {
-        if (!(*it)->is_geometry()) {
-            continue;
-        }
-
-        GeometryNode *g = static_cast<GeometryNode *>(*it);
-        list<collision_result> newHits;
-
-        switch (g->get_type()) {
-            case Primitive::NONHIERSPHERE:
-                {
-                    NonhierSphere *p = static_cast<NonhierSphere *>(g->get_primitive());
-                    const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
-                    newHits = nonhierSphereSolver(p, m, pos, dir);
-
-                    break;
-                }
-            case Primitive::MESH:
-                {
-                    Mesh *p = static_cast<Mesh *>(g->get_primitive());
-                    const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
-                    newHits = meshSolver(p, m, pos, dir);
-                    break;
-                }
-            case Primitive::NONHIERBOX:
-                {
-                    // NonhierBox *p = static_cast<NonhierBox *>(g->get_primitive());
-                    // const PhongMaterial *m = static_cast<const PhongMaterial *>(g->get_material());
-                    // newHits = meshSolver(p, m, pos, dir);
-                    // break;
-                }
-        }
-
-        allHits.insert(allHits.begin(), newHits.begin(), newHits.end());
-    }
-
-    return allHits;
+list<collision_result> Collider::sphereSolver(Sphere *s, const Point3D& pos, const Vector3D& dir) const {
+    return nonhierSphereSolver(&s->m_nonhierSphere, pos, dir);
 }
 
-list<collision_result> Collider::sphereSolver(Sphere *s, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const {
-    return nonhierSphereSolver(&s->m_nonhierSphere, m, pos, dir);
-}
-
-list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *nhs, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const {
+list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *nhs, const Point3D& pos, const Vector3D& dir) const {
     double a = dir.dot(dir);
     double b = (pos - nhs->get_position()).dot(dir) * 2;
     double c = (pos - nhs->get_position()).dot(pos - nhs->get_position()) - (nhs->get_radius() * nhs->get_radius());
@@ -146,10 +102,8 @@ list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *nhs, const P
         if (roots[i] < 0) continue;
         collision_result hit;
         hit.point = pos + (roots[i] * dir);
-        hit.colour = m->get_diffuse();
         hit.normal = (hit.point - nhs->get_position());
         hit.normal.normalize();
-        hit.phongMaterial = m;
 
         hits.push_back(hit);
     }
@@ -157,29 +111,11 @@ list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *nhs, const P
     return hits;
 }
 
-list<collision_result> Collider::cubeSolver(Cube *c, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const {
-    return nonhierBoxSolver(&c->m_nonhierBox, m, pos, dir);
+list<collision_result> Collider::cubeSolver(Cube *c, const Point3D& pos, const Vector3D& dir) const {
+    return nonhierBoxSolver(&c->m_nonhierBox, pos, dir);
 }
 
-list<collision_result> Collider::nonhierBoxSolver(NonhierBox *nhb, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const {
-    // vector<Point3D> verts;
-
-    // Vector3D boxPosition = nhb->get_position();
-    // double size = nhb->get_size();
-
-    // verts.push_back(pos);
-    // vers.push_back(pos + Vector3D(size, 0, 0));
-    // vers.push_back(pos + Vector3D(size, size, 0));
-    // vers.push_back(pos + Vector3D(0, size, 0));
-
-    // verts.push_back(pos + Vector3D(0, 0, size));
-    // vers.push_back(pos + Vector3D(size, 0, size));
-    // vers.push_back(pos + Vector3D(size, size, size));
-    // vers.push_back(pos + Vector3D(0, size, size));
-
-    // vector<vector<int> > faces;
-    // vector<int> face1 =
-
+list<collision_result> Collider::nonhierBoxSolver(NonhierBox *nhb, const Point3D& pos, const Vector3D& dir) const {
     Point3D boxPosition = nhb->get_position();
     double size = nhb->get_size();
 
@@ -215,8 +151,6 @@ list<collision_result> Collider::nonhierBoxSolver(NonhierBox *nhb, const PhongMa
     if (tmax > tmin && tmin > 0) {
         collision_result hit;
         hit.point = pos + (tmin * dir);
-        hit.colour = m->get_diffuse();
-        hit.phongMaterial = m;
 
         if (abs(hit.point[0] - boxPosition[0]) < 0.01) {
             hit.normal = Vector3D(-1, 0, 0);
@@ -238,7 +172,7 @@ list<collision_result> Collider::nonhierBoxSolver(NonhierBox *nhb, const PhongMa
     return hits;
 }
 
-list<collision_result> Collider::meshSolver(Mesh *mesh, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const {
+list<collision_result> Collider::meshSolver(Mesh *mesh, const Point3D& pos, const Vector3D& dir) const {
     list<collision_result> hits;
     vector<struct face_plane> facePlanes = mesh->facePlanes;
 
@@ -275,8 +209,6 @@ list<collision_result> Collider::meshSolver(Mesh *mesh, const PhongMaterial *m, 
         }
 
         if (passesPoints) {
-            hit.colour = m->get_diffuse();
-            hit.phongMaterial = m;
             hits.push_back(hit);
         }
     }

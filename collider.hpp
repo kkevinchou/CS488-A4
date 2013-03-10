@@ -10,7 +10,6 @@
 using namespace std;
 
 struct collision_result {
-    Colour colour;
     Point3D point;
     Vector3D normal;
     const PhongMaterial *phongMaterial;
@@ -25,11 +24,11 @@ public:
 private:
     const SceneNode *root;
 
-    list<collision_result> nonhierSphereSolver(NonhierSphere *nhs, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const;
-    list<collision_result> nonhierBoxSolver(NonhierBox *nhb, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const;
-    list<collision_result> meshSolver(Mesh *mesh, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const;
-    list<collision_result> sphereSolver(Sphere *s, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const;
-    list<collision_result> cubeSolver(Cube *c, const PhongMaterial *m, const Point3D& pos, const Vector3D& dir) const;
+    list<collision_result> nonhierSphereSolver(NonhierSphere *nhs, const Point3D& pos, const Vector3D& dir) const;
+    list<collision_result> nonhierBoxSolver(NonhierBox *nhb, const Point3D& pos, const Vector3D& dir) const;
+    list<collision_result> meshSolver(Mesh *mesh, const Point3D& pos, const Vector3D& dir) const;
+    list<collision_result> sphereSolver(Sphere *s, const Point3D& pos, const Vector3D& dir) const;
+    list<collision_result> cubeSolver(Cube *c, const Point3D& pos, const Vector3D& dir) const;
 };
 
 #endif

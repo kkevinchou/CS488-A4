@@ -97,7 +97,8 @@ Colour RayCaster::shade(struct cast_result primaryCast, const Light *light) cons
 }
 
 Colour RayCaster::shade(struct cast_result primaryCast) const {
-    Colour finalColour = ambient * primaryCast.collisionResult.colour;
+    const PhongMaterial *phongMaterial = primaryCast.collisionResult.phongMaterial;
+    Colour finalColour = ambient * phongMaterial->get_diffuse();
 
     cast_result castResult;
 

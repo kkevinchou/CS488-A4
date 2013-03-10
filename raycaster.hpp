@@ -33,6 +33,7 @@ private:
     const Background &bg;
     const list<Light *> &lights;
     const Colour &ambient;
+    const SceneNode *root;
     Collider collider;
 };
 

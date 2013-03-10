@@ -63,13 +63,13 @@ scene:rotate('X', 23)
 -- the floor
 
 plane = gr.mesh('plane', {
-           { -1, 0, -1 },
-           {  1, 0, -1 },
-           {  1,  0, 1 },
-           { -1, 0, 1  }
-        }, {
-           {3, 2, 1, 0}
-        })
+		   { -1, 0, -1 }, 
+		   {  1, 0, -1 }, 
+		   {  1,  0, 1 }, 
+		   { -1, 0, 1  }
+		}, {
+		   {3, 2, 1, 0}
+		})
 scene:add_child(plane)
 plane:set_material(grass)
 plane:scale(30, 30, 30)
@@ -90,16 +90,16 @@ buckyball:scale(1.5, 1.5, 1.5)
 cow_number = 1
 
 for _, pt in pairs({
-              {{1,1.3,14}, 20},
-              {{5,1.3,-11}, 180},
-              {{-5.5,1.3,-3}, -60}}) do
+		      {{1,1.3,14}, 20},
+		      {{5,1.3,-11}, 180},
+		      {{-5.5,1.3,-3}, -60}}) do
    cow_instance = gr.node('cow' .. tostring(cow_number))
    scene:add_child(cow_instance)
    cow_instance:add_child(cow_poly)
    cow_instance:translate(unpack(pt[1]))
    cow_instance:rotate('Y', pt[2])
    cow_instance:scale(1.4, 1.4, 1.4)
-
+   
    cow_number = cow_number + 1
 end
 
@@ -113,6 +113,6 @@ for i = 1, 6 do
 end
 
 gr.render(scene,
-      'macho_cows.png', 500, 500,
-      {0, 2, 30}, {0, 0, -1}, {0, 1, 0}, 50,
-      {0.4, 0.4, 0.4}, {gr.light({200, 202, 430}, {0.8, 0.8, 0.8}, {1, 0, 0})})
+	  'macho_cows.png', 256, 256,
+	  {0, 2, 30}, {0, 0, -1}, {0, 1, 0}, 50,
+	  {0.4, 0.4, 0.4}, {gr.light({200, 202, 430}, {0.8, 0.8, 0.8}, {1, 0, 0})})

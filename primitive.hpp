@@ -11,6 +11,8 @@ public:
     NONHIERSPHERE,
     NONHIERBOX,
     MESH,
+    SPHERE,
+    CUBE,
     UNDEFINED
   };
 
@@ -24,16 +26,6 @@ public:
 
   static int nextId;
   int id;
-};
-
-class Sphere : public Primitive {
-public:
-  virtual ~Sphere();
-};
-
-class Cube : public Primitive {
-public:
-  virtual ~Cube();
 };
 
 class NonhierSphere : public Primitive {
@@ -72,11 +64,43 @@ public:
     return Primitive::NONHIERBOX;
   }
 
+  Point3D get_position() const {
+    return m_pos;
+  }
+
+  double get_size() const {
+    return m_size;
+  }
+
   virtual ~NonhierBox();
 
 private:
   Point3D m_pos;
   double m_size;
+};
+
+class Sphere : public Primitive {
+public:
+  Sphere();
+  virtual ~Sphere();
+
+  NonhierSphere m_nonhierSphere;
+
+  virtual Type get_type() const {
+    return Primitive::SPHERE;
+  }
+};
+
+class Cube : public Primitive {
+public:
+  Cube();
+  virtual ~Cube();
+
+  NonhierBox m_nonhierBox;
+
+  virtual Type get_type() const {
+    return Primitive::CUBE;
+  }
 };
 
 #endif

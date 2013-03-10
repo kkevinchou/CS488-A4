@@ -50,7 +50,7 @@ void a4_render(// What to render
     int percentage = 0;
     clock_t t = clock();
 
-    bool superSampling = true;
+    bool superSampling = false;
     double sampleDimension = 16.0;
 
     for (int x = 0; x < width; x++) {
@@ -59,11 +59,11 @@ void a4_render(// What to render
             Colour c(0);
 
             if (!superSampling) {
-                dir = ( x / ((double)width) * 2 - 1 ) *
-                    tan( fov * M_PI / 360.0 ) *
-                    ( (double)width / (double)height ) *
-                    m_side + ( y / (double)height * 2 - 1 ) *
-                    tan( fov * M_PI / 360.0 ) *
+                dir = (x / ((double)width) * 2 - 1) *
+                    tan(fov/2 * M_PI/180.0) *
+                    ((double)width / (double)height) *
+                    m_side + (y / (double)height * 2 - 1) *
+                    tan(fov/2 * M_PI/180.0) *
                     -m_up + m_view;
                 dir.normalize();
 

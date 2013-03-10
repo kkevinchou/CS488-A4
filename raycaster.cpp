@@ -5,11 +5,11 @@
 
 
 RayCaster::RayCaster(const Point3D& eye, const Background& bg, const SceneNode *root, const list<Light *> &lights, const Colour &ambient)
-    : eye(eye), bg(bg), lights(lights), ambient(ambient), collider(root) {
+    : eye(eye), bg(bg), root(root), lights(lights), ambient(ambient), collider(root) {
 }
 
 cast_result RayCaster::cast(const Point3D &pos, const Vector3D &dir) const {
-    list<collision_result> hits = collider.getCollisionData(pos, dir);
+    list<collision_result> hits = collider.getCollisionData2(pos, dir);
 
     cast_result castResult;
     castResult.hit = (hits.size() > 0) ? true : false;

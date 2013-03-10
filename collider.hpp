@@ -19,10 +19,10 @@ class Collider {
 public:
     Collider(const SceneNode *root);
     list<collision_result> getCollisionData(const Point3D& pos, const Vector3D& dir) const;
-    list<collision_result> getCollisionData2(const Point3D& pos, const Vector3D& dir) const;
-    list<collision_result> getCollisionData2(const Point3D& pos, const Vector3D& dir, const SceneNode *node, Matrix4x4 trans, Matrix4x4 itrans) const;
 private:
     const SceneNode *root;
+
+    list<collision_result> getCollisionData(const Point3D& pos, const Vector3D& dir, const SceneNode *node, Matrix4x4 trans, Matrix4x4 itrans) const;
 
     list<collision_result> nonhierSphereSolver(NonhierSphere *nhs, const Point3D& pos, const Vector3D& dir) const;
     list<collision_result> nonhierBoxSolver(NonhierBox *nhb, const Point3D& pos, const Vector3D& dir) const;

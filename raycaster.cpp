@@ -9,7 +9,7 @@ RayCaster::RayCaster(const Point3D& eye, const Background& bg, const SceneNode *
 }
 
 cast_result RayCaster::cast(const Point3D &pos, const Vector3D &dir) const {
-    list<collision_result> hits = collider.getCollisionData2(pos, dir);
+    list<collision_result> hits = collider.getCollisionData(pos, dir);
 
     cast_result castResult;
     castResult.hit = (hits.size() > 0) ? true : false;

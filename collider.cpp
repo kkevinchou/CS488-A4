@@ -6,13 +6,13 @@
 Collider::Collider(const SceneNode *root) : root(root) {
 }
 
-list<collision_result> Collider::getCollisionData2(const Point3D& pos, const Vector3D& dir) const {
+list<collision_result> Collider::getCollisionData(const Point3D& pos, const Vector3D& dir) const {
     Matrix4x4 trans;
     Matrix4x4 itrans;
-    return getCollisionData2(pos, dir, root, trans, itrans);
+    return getCollisionData(pos, dir, root, trans, itrans);
 }
 
-list<collision_result> Collider::getCollisionData2(const Point3D& pos, const Vector3D& dir, const SceneNode* node, Matrix4x4 trans, Matrix4x4 itrans) const {
+list<collision_result> Collider::getCollisionData(const Point3D& pos, const Vector3D& dir, const SceneNode* node, Matrix4x4 trans, Matrix4x4 itrans) const {
     list<collision_result> allHits;
 
     trans = node->get_transform() * trans;
@@ -30,7 +30,6 @@ list<collision_result> Collider::getCollisionData2(const Point3D& pos, const Vec
                 {
                     NonhierSphere *p = static_cast<NonhierSphere *>(g->get_primitive());
                     newHits = nonhierSphereSolver(p, tpos, tdir);
-
                     break;
                 }
             case Primitive::SPHERE:
@@ -58,7 +57,7 @@ list<collision_result> Collider::getCollisionData2(const Point3D& pos, const Vec
                     break;
                 }
             default:
-                // cerr << "unhandled primitive type" << endl;
+                cerr << "unhandled primitive type" << endl;
                 break;
         }
 
@@ -72,7 +71,7 @@ list<collision_result> Collider::getCollisionData2(const Point3D& pos, const Vec
 
     list<SceneNode *> children = node->get_children();
     for (list<SceneNode *>::const_iterator it = children.begin(); it != children.end(); ++it) {
-        list<collision_result> childHits = getCollisionData2(pos, dir, *it, trans, itrans);
+        list<collision_result> childHits = getCollisionData(pos, dir, *it, trans, itrans);
         allHits.insert(allHits.end(), childHits.begin(), childHits.end());
     }
 
@@ -87,6 +86,10 @@ list<collision_result> Collider::getCollisionData2(const Point3D& pos, const Vec
 
 list<collision_result> Collider::sphereSolver(Sphere *s, const Point3D& pos, const Vector3D& dir) const {
     return nonhierSphereSolver(&s->m_nonhierSphere, pos, dir);
+}
+
+list<collision_result> Collider::cubeSolver(Cube *c, const Point3D& pos, const Vector3D& dir) const {
+    return nonhierBoxSolver(&c->m_nonhierBox, pos, dir);
 }
 
 list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *nhs, const Point3D& pos, const Vector3D& dir) const {
@@ -109,10 +112,6 @@ list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *nhs, const P
     }
 
     return hits;
-}
-
-list<collision_result> Collider::cubeSolver(Cube *c, const Point3D& pos, const Vector3D& dir) const {
-    return nonhierBoxSolver(&c->m_nonhierBox, pos, dir);
 }
 
 list<collision_result> Collider::nonhierBoxSolver(NonhierBox *nhb, const Point3D& pos, const Vector3D& dir) const {
@@ -144,9 +143,6 @@ list<collision_result> Collider::nonhierBoxSolver(NonhierBox *nhb, const Point3D
 
     tmin = max(tmin, min(tz1, tz2));
     tmax = min(tmax, max(tz1, tz2));
-
-    // TODO: CLEANUP THE COLOUR CODE, LIFT UP INTO THE GETCOLLISIONDATA2 class
-    // dont need to store colour, we can get from phong material
 
     if (tmax > tmin && tmin > 0) {
         collision_result hit;

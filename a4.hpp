@@ -23,4 +23,6 @@ void a4_render(// What to render
                const std::list<Light*>& lights
                );
 
+
+
 #endif

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
+extern bool debug;
 
 RayCaster::RayCaster(const Point3D& eye, const Background& bg, const SceneNode *root, const list<Light *> &lights, const Colour &ambient)
     : eye(eye), bg(bg), root(root), lights(lights), ambient(ambient), collider(root) {
@@ -68,6 +69,8 @@ Colour RayCaster::shade(struct cast_result primaryCast, const Light *light) cons
     Point3D position = primaryCast.collisionResult.point;
     const PhongMaterial *phongMaterial = primaryCast.collisionResult.phongMaterial;
 
+    // Casting the shadow ray, if it doesn't hit something on the
+    // way to the light, then the light isn't being occluded
     castResult = cast(position, light->position - position);
     if (!castResult.hit) {
         double distSq = position.distSq(light->position);

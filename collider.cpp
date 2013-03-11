@@ -3,6 +3,8 @@
 #include "polyroots.hpp"
 #include "collider.hpp"
 
+extern bool debug;
+
 Collider::Collider(const SceneNode *root) : root(root) {
 }
 
@@ -20,6 +22,7 @@ list<collision_result> Collider::getCollisionData(const Point3D& pos, const Vect
 
     Point3D tpos = itrans * pos;
     Vector3D tdir = itrans * dir;
+    tdir.normalize();
 
     if (node->is_geometry()) {
         const GeometryNode *g = static_cast<const GeometryNode *>(node);
@@ -53,7 +56,7 @@ list<collision_result> Collider::getCollisionData(const Point3D& pos, const Vect
             case Primitive::MESH:
                 {
                     Mesh *p = static_cast<Mesh *>(g->get_primitive());
-                    newHits = meshSolver(p, tpos, tdir);
+                    newHits = meshSolver(p, tpos, tdir, true);
                     break;
                 }
             default:
@@ -114,61 +117,106 @@ list<collision_result> Collider::nonhierSphereSolver(NonhierSphere *nhs, const P
     return hits;
 }
 
-list<collision_result> Collider::nonhierBoxSolver(NonhierBox *nhb, const Point3D& pos, const Vector3D& dir) const {
+list<collision_result> Collider::boundingBoxSolver(NonhierBox *nhb, const Vector3D &dimension, const Point3D& pos, const Vector3D& dir) const {
+    double tMax =  INFINITY;
+    double tMin = -INFINITY;
+
     Point3D boxPosition = nhb->get_position();
-    double size = nhb->get_size();
 
-    double tmin = -INFINITY, tmax = INFINITY;
-
+    collision_result hit;
     list<collision_result> hits;
 
-    if (dir[0] == 0 || dir[1] == 0 || dir[2] == 0) {
-        return hits;
-    }
+    for (int i = 0; i < 3; i++) {
+        double t1 = (boxPosition[i] - pos[i]) / dir[i];
+        double t2 = (boxPosition[i] + max(max(dimension[0], dimension[1]), dimension[2]) - pos[i]) / dir[i];
 
-    double tx1 = (boxPosition[0] - pos[0]) / dir[0];
-    double tx2 = (boxPosition[0] + size - pos[0]) / dir[0];
-
-    tmin = max(tmin, min(tx1, tx2));
-    tmax = min(tmax, max(tx1, tx2));
-
-    double ty1 = (boxPosition[1] - pos[1]) / dir[1];
-    double ty2 = (boxPosition[1] + size - pos[1]) / dir[1];
-
-    tmin = max(tmin, min(ty1, ty2));
-    tmax = min(tmax, max(ty1, ty2));
-
-    double tz1 = (boxPosition[2] - pos[2]) / dir[2];
-    double tz2 = (boxPosition[2] + size - pos[2]) / dir[2];
-
-    tmin = max(tmin, min(tz1, tz2));
-    tmax = min(tmax, max(tz1, tz2));
-
-    if (tmax > tmin && tmin > 0) {
-        collision_result hit;
-        hit.point = pos + (tmin * dir);
-
-        if (abs(hit.point[0] - boxPosition[0]) < 0.01) {
-            hit.normal = Vector3D(-1, 0, 0);
-        } else if (abs(hit.point[0] - (boxPosition[0] + size)) < 0.01) {
-            hit.normal = Vector3D(1, 0, 0);
-        } else if (abs(hit.point[1] - boxPosition[1]) < 0.01) {
-            hit.normal = Vector3D(0, -1, 0);
-        } else if (abs(hit.point[1] - (boxPosition[1] + size)) < 0.01) {
-            hit.normal = Vector3D(0, 1, 0);
-        } else if (abs(hit.point[2] - boxPosition[2]) < 0.01) {
-            hit.normal = Vector3D(0, 0, -1);
-        } else if (abs(hit.point[2] - (boxPosition[2] + size)) < 0.01) {
-            hit.normal = Vector3D(0, 0, 1);
+        if (t1 > t2) {
+            swap(t1, t2);
         }
 
-        hits.push_back(hit);
+        if (t2 < tMax) {
+            tMax = t2;
+        }
+
+        if (t1 > tMin) {
+            tMin = t1;
+
+            if (i == 0) {
+                hit.normal = Vector3D(-dir[0], 0, 0);
+            } else if (i == 1) {
+                hit.normal = Vector3D(0, -dir[1], 0);
+            } else if (i == 2) {
+                hit.normal = Vector3D(0, 0, -dir[2]);
+            }
+            hit.normal.normalize();
+        }
+
+        if ((tMin > tMax) || tMax < 0) {
+            return hits;
+        }
     }
+
+    hit.point = pos + (tMin - 0.01) * dir;
+    hits.push_back(hit);
 
     return hits;
 }
 
-list<collision_result> Collider::meshSolver(Mesh *mesh, const Point3D& pos, const Vector3D& dir) const {
+list<collision_result> Collider::nonhierBoxSolver(NonhierBox *nhb, const Point3D& pos, const Vector3D& dir) const {
+    double tMax =  INFINITY;
+    double tMin = -INFINITY;
+
+    Point3D boxPosition = nhb->get_position();
+    double size = nhb->get_size();
+
+    collision_result hit;
+    list<collision_result> hits;
+
+    for (int i = 0; i < 3; i++) {
+        double t1 = (boxPosition[i] - pos[i]) / dir[i];
+        double t2 = (boxPosition[i] + size - pos[i]) / dir[i];
+
+        if (t1 > t2) {
+            swap(t1, t2);
+        }
+
+        if (t2 < tMax) {
+            tMax = t2;
+        }
+
+        if (t1 > tMin) {
+            tMin = t1;
+
+            if (i == 0) {
+                hit.normal = Vector3D(-dir[0], 0, 0);
+            } else if (i == 1) {
+                hit.normal = Vector3D(0, -dir[1], 0);
+            } else if (i == 2) {
+                hit.normal = Vector3D(0, 0, -dir[2]);
+            }
+            hit.normal.normalize();
+        }
+
+        if ((tMin > tMax) || tMax < 0) {
+            return hits;
+        }
+    }
+
+    hit.point = pos + (tMin - 0.01) * dir;
+    hits.push_back(hit);
+
+    return hits;
+}
+
+list<collision_result> Collider::meshSolver(Mesh *mesh, const Point3D& pos, const Vector3D& dir, bool useAABB) const {
+    if (useAABB) {
+        list<collision_result> aabbHits = boundingBoxSolver(mesh->aabb, mesh->dimension, pos, dir);
+        // return aabbHits;
+        if (aabbHits.size() == 0) {
+            return aabbHits;
+        }
+    }
+
     list<collision_result> hits;
     vector<struct face_plane> facePlanes = mesh->facePlanes;
 
@@ -182,7 +230,11 @@ list<collision_result> Collider::meshSolver(Mesh *mesh, const Point3D& pos, cons
         refNormal.normalize();
 
         double t = (refPoint - pos).dot(refNormal) / (dir.dot(refNormal));
-        if (t <= 0) continue;
+
+        if (t <= 0) {
+            continue;
+        }
+
         Point3D intersectPoint = pos + t * dir;
 
         collision_result hit;
